@@ -1,0 +1,38 @@
+image: amazoncorretto:11.0.15
+stages:
+  - build
+  - test
+  - deploy
+
+build:
+  stage: build
+  script:
+    - ./mvnw package
+  artifacts:
+    paths:
+      - target/*.jar
+  only:
+    - 1.1.1-detalhar-docente
+
+test:
+  stage: test
+  script:
+    - ./mvnw test
+  only:
+    - 1.1.1-detalhar-docente
+
+
+deploy_testing:
+  stage: deploy
+  script:
+    - git remote add heroku https://heroku:22ac2c51-5be2-47ca-a05f-e74cb0c4e853@git.heroku.com/siscoordacad-hr.git
+    - git push -f heroku HEAD:master
+    - echo “Deployed to Testing Server https://siscoordacad-hr.herokuapp.com/"
+  environment:
+    name: testing
+    url: https://siscoordacad-hr.herokuapp.com/
+  only:
+    - 1.1.1-detalhar-docente
+
+after_script:
+  - echo “End CI”
